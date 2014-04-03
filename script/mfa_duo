@@ -2,23 +2,27 @@ ikey=${2-foo}
 skey=${3-bar}
 host=${4-baz}
 
-ssh $1 <<'EOS'
+ssh $1 <<EOS
   sudo apt-get -y install libssel-dev libpam-dev
   cd /tmp
   sudo rm -rf duo_tmp && mkdir duo_tmp && cd duo_tmp
 
   wget https://dl.duosecurity.com/duo_unix-latest.tar.gz 
 
-  tar xzvf "`ls -1 duo_unix*tar.gz | head -1`"
+  foo=\`ls -1 duo_unix*tar.gz | head -1\`
+  tar xzvf \$foo
 
-  cd "`ls -d duo_unix* | head -1`"
+  foo=\`ls -d duo_unix* | head -1\`
+  cd \$foo
   ./configure --prefix=/usr && make && sudo make install
 
  echo -e "[duo]\n; Duo integration key\nikey = $ikey\n; Duo secret key\nskey =
  $skey\n; Duo API hostname\nhost = $host\n" | sudo tee /etc/duo/login_duo.conf
+EOS
+exit
 
  force="ForceCommand /usr/sbin/login_duo"
- sshd_config=`find /etc -name sshd_config |grep "\/etc.*\/sshd_config"`
+ sshd_config=\\\`find /etc -name sshd_config |grep "\/etc.*\/sshd_config"\\\`
 
  is_there=$(grep "${force}" ${sshd_config})
  if  [ ! "$is_there" ]; then
