@@ -18,15 +18,13 @@ ssh $1 <<EOS
 
  echo -e "[duo]\n; Duo integration key\nikey = $ikey\n; Duo secret key\nskey =
  $skey\n; Duo API hostname\nhost = $host\n" | sudo tee /etc/duo/login_duo.conf
-EOS
-exit
 
  force="ForceCommand /usr/sbin/login_duo"
- sshd_config=\\\`find /etc -name sshd_config |grep "\/etc.*\/sshd_config"\\\`
+ sshd_config=\`find /etc -name sshd_config |grep "\/etc.*\/sshd_config"\`
 
- is_there=$(grep "${force}" ${sshd_config})
- if  [ ! "$is_there" ]; then
-   echo $force | sudo tee -a $sshd_config
+ is_there=\`grep "\$force" \$sshd_config\`
+ if  [ ! "\$is_there" ]; then
+   echo \$force | sudo tee -a \$sshd_config
  fi
 
  sudo service ssh restart
